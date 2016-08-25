@@ -34,44 +34,44 @@ raw_acct_data = CSV.read('./support/accounts.csv')
 
 module Bank	
 	class Account
-
-		attr_reader :id, :open_date # read only as these should be immutable
-		attr_accessor :balance # this should permit reading and writing
-
-		# intial_balance in pennies
-
+	
+	attr_reader :id, :open_date # read only as these should be immutable
+	attr_accessor :balance # this should permit reading and writing
+	
+	# intial_balance in pennies
+	
 		def initialize(id, balance, open_date)
-			# ruby dosen't like constants in intialize values, lowercase it
+		# ruby dosen't like constants in intialize values, lowercase it
 			@id = id
 			@balance = balance
 			@open_date = open_date
 			# pretty_initial_balance = (@initial_balance / 100).to_f
 			is_negative # method to determine if transaction would lead to overdraft
 		end
-
-# print debuggin' # raises error as expected if transaction is negative		
+		
+		# print debuggin' # raises error as expected if transaction is negative		
 		def is_negative
 			unless @balance > 0 
 				raise ArgumentError.new("You must enter a positive balance!")
 			end
 		end
-
+		
 		def see_balance
 			return @balance
 		end
-
+		
 		def withdraw(money)
 			@balance = @balance - money
 			is_negative
 			see_balance
 		end
-
+		
 		def deposit(money)
 			@balance = @balance + money 
 			is_negative
 			see_balance
 		end
-
+		
 		def self.all(csv_data)
 			accounts_all = []
 			csv_data.each do |line|
@@ -82,25 +82,21 @@ module Bank
 				# puts current_balance
 				open_date = line[2]
 				#puts open_date
-
 				new_account = Bank::Account.new(line_acct_id, current_balance.to_f, open_date)
 				accounts_all.push(new_account)
 			end
 			return  accounts_all
-			#return csv_data
+		#return csv_data
 		end
-
+		
 		#FROM Austin, this method should take an array of accounts as a parameter, in addition the ID
 		def self.find(id, accounts)
 			accounts.each do |account|
-
 				if id == account.id
 					return account
-
-
 				end
-			end
-			return nil #"Account not found." # generally bad for fxns to return two dif kinds of data, here you may get acct or string. Nil might be better.
+		end
+		return nil #"Account not found." # generally bad for fxns to return two dif kinds of data, here you may get acct or string. Nil might be better.
 		end
 	end
 end
