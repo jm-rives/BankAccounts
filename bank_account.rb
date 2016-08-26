@@ -1,36 +1,28 @@
-# Learning Goals
+# Create a SavingsAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
+# * Use inheritance to share some behavior across classes
+# * Enhance functionality built in Wave 1
+# 
+# [ ] The initial balance cannot be less than $10. If it is, this will raise an ArgumentError
+# [ ] Updated withdrawal functionality:
+# 	() Each withdrawal 'transaction' incurs a fee of $2 that is taken out of the balance.
+# 	() Does not allow the account to go below the $10 minimum balance - Will output a warning message and return the original un-modified balance
+# 	() It should include the following new method:
 
-# [x] Create and use class methods
-# [x] Use a CSV file for loading data - how to test?
-#
-# Primary Requirements
-#
-# [x] Update the Account class to be able to manage fields from the CSV file used as input.
-# 	 	For example, manually choose the data from the first line of the CSV file
-#   	and ensure you can create a new instance of your Account using that data
-#
-# Add the following class methods to your existing Account class
-#
-# [x ] self.all - returns a collection (array) of Account instances, r
-#     representing all of the Accounts described in the CSV. See below for the CSV file specifications
-# [ x] self.find(id) - returns an instance of Account where the value 
-#    of the id field in the CSV matches the passed parameter
-# [ x] CSV Data File
+# [ ] add_interest(rate): Calculate the interest on the balance and add the interest to the balance. Return the interest that was calculated and added to the balance (not the updated balance).
+# [ ] Input rate is assumed to be a percentage (i.e. 0.25).
+# *** The formula for calculating interest is balance * rate/100
+# *** Example: If the interest rate is 0.25% and the balance is $10,000, then the interest that is returned is $25 and the new balance becomes $10,025.
+# [ ] Create a CheckingAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
 
-# Bank::Account
-
-# The data, in order in the CSV, consists of:
-# ID - (Fixnum) a unique identifier for that Account
-# Balance - (Fixnum) the account balance amount, in cents (i.e., 150 would be $1.50)
-# OpenDate - (Datetime) when the account was opened
-
-# () What tests should I write for a module, classess within it, methods?
+# [ ] Updated withdrawal functionality:
+# 	() Each withdrawal 'transaction' incurs a fee of $1 that is taken out of the balance. Returns the updated account balance.
+# 	() Does not allow the account to go negative. Will output a warning message and return the original un-modified balance.
+# 	() withdraw_using_check(amount): The input amount gets taken out of the account as a result of a check withdrawal. Returns the updated account balance.
+#   () Allows the account to go into overdraft up to -$10 but not any lower
+#   () The user is allowed three free check uses in one month, but any subsequent use adds a $2 transaction fee
+#[ ] reset_checks: Resets the number of checks used to zero
 require 'csv'
 raw_acct_data = CSV.read('./support/accounts.csv')
-
-
-
-
 
 module Bank	
 	class Account
@@ -105,10 +97,122 @@ module Bank
 	end
 end
 
+######################################################################
+##
+## BankAccount Wave 3
+##
+######################################################################
+# Learning Goals
+
+# [x] Create and use class methods
+# [x] Use a CSV file for loading data - how to test?
+#
+# Primary Requirements
+#
+# [x] Update the Account class to be able to manage fields from the CSV file used as input.
+# 	 	For example, manually choose the data from the first line of the CSV file
+#   	and ensure you can create a new instance of your Account using that data
+#
+# Add the following class methods to your existing Account class
+#
+# [x ] self.all - returns a collection (array) of Account instances, r
+#     representing all of the Accounts described in the CSV. See below for the CSV file specifications
+# [ x] self.find(id) - returns an instance of Account where the value 
+#    of the id field in the CSV matches the passed parameter
+# [ x] CSV Data File
+
+# Bank::Account
+
+# The data, in order in the CSV, consists of:
+# ID - (Fixnum) a unique identifier for that Account
+# Balance - (Fixnum) the account balance amount, in cents (i.e., 150 would be $1.50)
+# OpenDate - (Datetime) when the account was opened
+
+# () What tests should I write for a module, classess within it, methods?
+# require 'csv'
+# raw_acct_data = CSV.read('./support/accounts.csv')
+
+
+
+
+
+# module Bank	
+# 	class Account
+
+# 		attr_reader :id, :open_date # read only as these should be immutable
+# 		attr_accessor :balance # this should permit reading and writing
+
+# 		# intial_balance in pennies
+
+# 		def initialize(id, balance, open_date)
+# 			# ruby dosen't like constants in intialize values, lowercase it
+# 			@id = id
+# 			@balance = balance
+# 			@open_date = open_date
+# 			# pretty_initial_balance = (@initial_balance / 100).to_f
+# 			is_negative # method to determine if transaction would lead to overdraft
+# 		end
+
+# # print debuggin' # raises error as expected if transaction is negative		
+# 		def is_negative
+# 			unless @balance > 0 
+# 				raise ArgumentError.new("You must enter a positive balance!")
+# 			end
+# 		end
+
+# 		def see_balance
+# 			return @balance
+# 		end
+
+# 		def withdraw(money)
+# 			@balance = @balance - money
+# 			is_negative
+# 			see_balance
+# 		end
+
+# 		def deposit(money)
+# 			@balance = @balance + money 
+# 			is_negative
+# 			see_balance
+# 		end
+
+# 		def self.all(csv_data)
+# 			accounts_all = []
+# 			csv_data.each do |line|
+# 				#puts line werks as expected
+# 				line_acct_id = line[0] 
+# 				#puts line_acct_id
+# 				current_balance = line[1]
+# 				# puts current_balance
+# 				open_date = line[2]
+# 				#puts open_date
+
+# 				new_account = Bank::Account.new(line_acct_id, current_balance.to_f, open_date)
+# 				accounts_all.push(new_account)
+# 			end
+# 			return  accounts_all
+# 			#return csv_data
+# 		end
+
+# 		#FROM Austin, this method should take an array of accounts as a parameter, in addition the ID
+# 		def self.find(id, accounts)
+# 			accounts.each do |account|
+
+# 				if id == account.id
+# 					return account
+
+
+# 				end
+# 			end
+# 			return nil #"Account not found." # generally bad for fxns to return two dif kinds of data, here you may get acct or string. Nil might be better.
+# 		end
+# 	end
+# end
+
 
 #TEST 5
-accounts = Bank::Account.all(raw_acct_data)
-puts Bank::Account.find('15155', accounts)
+# accounts = Bank::Account.all(raw_acct_data)
+# puts Bank::Account.find('15155', accounts)
 
 #TEST 4
 # accounts = Bank::Account.all(raw_acct_data)
