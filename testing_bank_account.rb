@@ -46,12 +46,6 @@ module Bank
 			end
 		end
 
-		# def balance_to_low
-		# 	unless @balance > 10000
-	 #  		 raise ArgumentError.new("Your balance must be $10 or more!")
-	 #  	end
-  # 	end
-
 		def see_balance
 			return @balance
 		end
@@ -60,13 +54,13 @@ module Bank
 		def withdraw(money)
 			@balance = @balance - money
 			is_to_low
-			see_balance
+			return see_balance
 		end
 
 		def deposit(money)
 			@balance = @balance + money 
 			is_to_low
-			see_balance
+			return see_balance
 		end
 	end
 
@@ -91,20 +85,22 @@ module Bank
 			else
 				@balance = @balance - money - 200
 			end
-			puts see_balance
+			return see_balance
 		end
 
 		# Interest is a percentage
 		def add_interest(rate)
 			interest = @balance * rate / 100
 			@balance = interest + balance
-			return interst # puts see_balance # just return the interst not the balance  + intersest
+			return add_interest # puts see_balance # just return the interst not the balance  + intersest
 		end
-	 end
+	end
 
 	class CheckingAccount < Account
-		def initialize(id, balance, open_date, check_count)
+
+		def initialize(id, balance, open_date)
 			super
+			@check_count = 0
 			see_balance
 			#balance_to_low # remove this is a savings account method
 			is_negative
@@ -116,7 +112,7 @@ module Bank
 			else
 				@balance = @balance - money - 100
 			end
-			puts see_balance
+			returns see_balance
 		end
 
 		
@@ -129,8 +125,7 @@ module Bank
 				else
 					@balance = @balance - amount
 					@check_count += 1
-					return check_count
-					return  see_balance
+					return see_balance
 				end
 			else
 				if @balance - amount - 200 < (-1000)
@@ -138,14 +133,16 @@ module Bank
 				else
 					@balance = @balance - amount -200
 					@check_count += 1
-					return check_count
 					return see_balance
 				end
 			end	
 		end
 
-		# def reset_checks
-		# end
+		def reset_checks
+			@check_count = 0
+			return check_count
+		end
+
 	end
 end
 # consider using check_reset()
@@ -159,4 +156,4 @@ checking1 = Bank::CheckingAccount.new(9919, 4000, 2016)
 # . checking1.withdraw_using_check(5000)	# testing check < 3, with allowed overdraft, # initial fail throwing error with -5 overdrafts because I set overdraft value to 10 (10 cents) instead of 1000 ($10)
 # . checking1.withdraw_using_check(2000) # testing check > 3, no overdraft
 # . checking1.withdraw_using_check(5100) # testing check > 3, with excess overdraft
-checking1.withdraw_using_check(5500)	# testing check > 3, with allowed overdraft
+# . checking1.withdraw_using_check(5500)	# testing check > 3, with allowed overdraft
