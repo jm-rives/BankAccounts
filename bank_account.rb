@@ -1,4 +1,5 @@
-# Create a SavingsAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
+#BANK ACCOUNT WAVE 3 
+#Create a SavingsAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
 # * Use inheritance to share some behavior across classes
 # * Enhance functionality built in Wave 1
 # 
@@ -12,9 +13,9 @@
 # [x] Input rate is assumed to be a percentage (i.e. 0.25).
 # *** The formula for calculating interest is balance * rate/100
 # *** Example: If the interest rate is 0.25% and the balance is $10,000, then the interest that is returned is $25 and the new balance becomes $10,025.
-# [ ] Create a CheckingAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
+# [x] Create a CheckingAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
 
-# [ ] Updated withdrawal functionality:
+# [x] Updated withdrawal functionality:
 # 	(x) Each **cash** withdrawal 'transaction' incurs a fee of $1 that is taken out of the balance. Returns the updated account balance.
 # 	(x) Does not allow the account to go negative. Will output a warning message and return the original un-modified balance.
 # 	(x) withdraw_using_check(amount): The input amount gets taken out of the account as a result of a check withdrawal. Returns the updated account balance.
@@ -22,6 +23,7 @@
 #   (x) The user is allowed three free check uses in one month, but any subsequent use adds a $2 transaction fee
 #[x] reset_checks: Resets the number of checks used to zero
 # { } build a helper method for fee that takes two parameters
+
 module Bank
 	
 	class Account
@@ -68,7 +70,6 @@ module Bank
 	class SavingsAccount < Account #should receive parent classess attributes like is_negative
 		def initialize(id, balance, open_date)
 			super # should include ref: http://rubylearning.com/satishtalim/ruby_overriding_methods.html
-			withdraw
 			check_low_balance
 		end
 
@@ -79,11 +80,11 @@ module Bank
 		end
 
 		# withdraws money and debits fee appropraitely
-		def withdraw(money)
-			if @balance - money - 200 < 1000
+		def withdraw(money, fee)
+			if @balance - money - fee < 1000
 				raise ArgumentError.new("Transaction Denied! Insufficient balance!")
 			else
-				@balance = @balance - money - 200
+				@balance = @balance - money - fee
 			end
 			return see_balance
 		end
@@ -92,7 +93,7 @@ module Bank
 		def add_interest(rate)
 			interest = @balance * rate / 100
 			@balance = interest + balance
-			return add_interest # puts see_balance # just return the interst not the balance  + intersest
+			return interest # puts see_balance # just return the interst not the balance  + intersest
 		end
 	end
 
@@ -100,24 +101,24 @@ module Bank
 
 		def initialize(id, balance, open_date)
 			super
-			@check_count = 0
+			@check_count = 3
 			see_balance
 			#balance_to_low # remove this is a savings account method
 			is_negative
 		end
 
-		def withdraw(money) #consider adding fee param
-			if @balance - money - 100 < 0
+		# could withdraw be a helper method?
+		def withdraw(money, fee) 
+			if @balance - money - fee < 0
 				raise ArgumentError.new("Transaction Denied! Insufficient balance!")
 			else
-				@balance = @balance - money - 100
+				@balance = @balance - money - fee
 			end
-			returns see_balance
+			return see_balance
 		end
 
 		
-		def withdraw_using_check(amount)
-			
+		def withdraw_using_check(amount, fee)
 			if @check_count < 3
 				# so if balance - withdraw overdrafts is greater than 10 (meaning negative 10 back to zero, ArgError should NOT raise)
 				if @balance - amount < (-1000) # corrected logic for handling negative numbers
@@ -128,16 +129,16 @@ module Bank
 					return see_balance
 				end
 			else
-				if @balance - amount - 200 < (-1000)
+				if @balance - amount - fee < (-1000)
 					raise ArgumentError.new("Transaction Denied! Insufficient balance!")
 				else
-					@balance = @balance - amount -200
+					@balance = @balance - amount - fee
 					@check_count += 1
 					return see_balance
 				end
 			end	
 		end
-
+		# consider making private
 		def reset_checks
 			@check_count = 0
 			return check_count
@@ -145,301 +146,16 @@ module Bank
 
 	end
 end
-# consider using check_reset()
-# consider adding overdraft method (using twice now)
-# consider adding fee method to be called, default could be $0.00
+
 # BEGIN TESTS
-checking1 = Bank::CheckingAccount.new(9919, 4000, 2016)
+# checking1 = Bank::CheckingAccount.new(9919, 4000, 2016)
 # . checking1.withdraw(1000)
 # . checking1.withdraw_using_check(2000) # testing check < 3, no overdraft
 # . checking1.withdraw_using_check(5100) # testing check < 3, with excess overdraft #works as expected raises argu defined at line 125
 # . checking1.withdraw_using_check(5000)	# testing check < 3, with allowed overdraft, # initial fail throwing error with -5 overdrafts because I set overdraft value to 10 (10 cents) instead of 1000 ($10)
 # . checking1.withdraw_using_check(2000) # testing check > 3, no overdraft
 # . checking1.withdraw_using_check(5100) # testing check > 3, with excess overdraft
-# . checking1.withdraw_using_check(5500)	# testing check > 3, with allowed overdraft
-
-######################################################################
-##
-## BankAccount Wave 3
-##
-######################################################################
-# Learning Goals
-
-# [x] Create and use class methods
-# [x] Use a CSV file for loading data - how to test?
-#
-# Primary Requirements
-#
-# [x] Update the Account class to be able to manage fields from the CSV file used as input.
-# 	 	For example, manually choose the data from the first line of the CSV file
-#   	and ensure you can create a new instance of your Account using that data
-#
-# Add the following class methods to your existing Account class
-#
-# [x ] self.all - returns a collection (array) of Account instances, r
-#     representing all of the Accounts described in the CSV. See below for the CSV file specifications
-# [ x] self.find(id) - returns an instance of Account where the value 
-#    of the id field in the CSV matches the passed parameter
-# [ x] CSV Data File
-
-# Bank::Account
-
-# The data, in order in the CSV, consists of:
-# ID - (Fixnum) a unique identifier for that Account
-# Balance - (Fixnum) the account balance amount, in cents (i.e., 150 would be $1.50)
-# OpenDate - (Datetime) when the account was opened
-
-# () What tests should I write for a module, classess within it, methods?
-# require 'csv'
-# raw_acct_data = CSV.read('./support/accounts.csv')
-
-
-
-
-
-# module Bank	
-# 	class Account
-
-# 		attr_reader :id, :open_date # read only as these should be immutable
-# 		attr_accessor :balance # this should permit reading and writing
-
-# 		# intial_balance in pennies
-
-# 		def initialize(id, balance, open_date)
-# 			# ruby dosen't like constants in intialize values, lowercase it
-# 			@id = id
-# 			@balance = balance
-# 			@open_date = open_date
-# 			# pretty_initial_balance = (@initial_balance / 100).to_f
-# 			is_negative # method to determine if transaction would lead to overdraft
-# 		end
-
-# # print debuggin' # raises error as expected if transaction is negative		
-# 		def is_negative
-# 			unless @balance > 0 
-# 				raise ArgumentError.new("You must enter a positive balance!")
-# 			end
-# 		end
-
-# 		def see_balance
-# 			return @balance
-# 		end
-
-# 		def withdraw(money)
-# 			@balance = @balance - money
-# 			is_negative
-# 			see_balance
-# 		end
-
-# 		def deposit(money)
-# 			@balance = @balance + money 
-# 			is_negative
-# 			see_balance
-# 		end
-
-# 		def self.all(csv_data)
-# 			accounts_all = []
-# 			csv_data.each do |line|
-# 				#puts line werks as expected
-# 				line_acct_id = line[0] 
-# 				#puts line_acct_id
-# 				current_balance = line[1]
-# 				# puts current_balance
-# 				open_date = line[2]
-# 				#puts open_date
-
-# 				new_account = Bank::Account.new(line_acct_id, current_balance.to_f, open_date)
-# 				accounts_all.push(new_account)
-# 			end
-# 			return  accounts_all
-# 			#return csv_data
-# 		end
-
-# 		#FROM Austin, this method should take an array of accounts as a parameter, in addition the ID
-# 		def self.find(id, accounts)
-# 			accounts.each do |account|
-
-# 				if id == account.id
-# 					return account
-
-
-# 				end
-# 			end
-# 			return nil #"Account not found." # generally bad for fxns to return two dif kinds of data, here you may get acct or string. Nil might be better.
-# 		end
-# 	end
-# end
-
-
-#TEST 5
-# accounts = Bank::Account.all(raw_acct_data)
-# puts Bank::Account.find('15155', accounts)
-
-#TEST 4
-# accounts = Bank::Account.all(raw_acct_data)
-# puts Bank::Account.find('1213', accounts)
-
-#TEST 3
-# puts Bank::Account.all(raw_acct_data)
-
-# TEST 2
-# acct_1 = Bank::Account.new(raw_acct_data[0][0], raw_acct_data[0][1].to_f)
-# Your new account id is 1212 and your balance is 1235667.0.
-
-
-# TEST 1
-# puts "Your new account id is #{acct_1.id} and your balance is #{acct_1.balance}."
-# returns appropriately is_negative': You must enter a positive balance! (ArgumentError)
-
-
-
-
-
-
-# self.all # class method # could this not be a sepreate data sanitizer class
-# 	all_accounts_info = []
-# 	CSV.foreach("path/to/file.csv") do |row|
-# 		all_accounts.push(row)
-# 		return all_accounts
-# 	end
-		
-# self.find(id) #class method, expects 2d array, or mebe hash # could this be a seperate search class
-# return find
-# end	
-
-################################################################
-#
-# WAVE 2 - above this line
-#
-################################################################
-# Optional:
-
-# Implement the optional requirement from Wave 1
-# Add the following class methods to your existing Owner class
-
-# self.all - returns a collection of Owner instances, representing all of the Owners described in the CSV. See below for the CSV file specifications
-# self.find(id) - returns an instance of Owner where the value of the id field in the CSV matches the passed parameter
-# Bank::Owner
-# The data, in order in the CSV, consists of:
-# ID - (Fixnum) a unique identifier for that Owner
-# Last Name - (String) the owner's last name
-# First Name - (String) the owner's first name
-# Street Addess - (String) the owner's street address
-# City - (String) the owner's city
-# State - (String) the owner's state
-
-# To create the relationship between the accounts and the owners 
-# use the account_owners CSV file. The data for this file, in order in the CSV, consists of: Account ID - (Fixnum) a unique identifier corresponding to an account Owner ID - (Fixnum) a unique identifier corresponding to an owner
-
-##################
-# WAVE 1 testing
-##################
-# acct_1 = Bank::Account.new(12345678, 100000)
-
-# puts acct_1.see_balance
-
-# puts acct_1.withdraw(500)
-
-# puts acct_1.deposit(200000)
-
-# puts acct_1.see_balance
-
-#############
-## WAVE 1
-#############
-
-# Learning Goals
-
-# [x] Create a class inside of a module
-# [x] Create methods inside the *class* to perform actions
-# [x] Learn how Ruby does error handling
-
-# Requirements
-##############################################################
-
-# [X] Create a Bank module which will contain your Account class and any future bank account logic.
-
-# [x] Create an Account class which should have the following functionality:
-
-# [x] A new account should be created with an ID and an initial balance
-# [x] Should have a withdraw method that accepts a single parameter which represents the amount of money that will be withdrawn. This method should return the updated account balance.
-# [x] Should have a deposit method that accepts a single parameter which represents the amount of money that will be deposited. This method should return the updated account balance.
-# [x] Should be able to access the current balance of an account at any time.
-
-# Error handling
-###############################################################
-# A new account cannot be created with initial negative balance - this will raise an ArgumentError (Google this)
-	#def transfer_money(amount)
-	  #unless amount.is_a?(Number)
-	  # raise ArgumentError.new("Only numbers are allowed")
-	  # end
-  # ... Do the actual work
-#end
-# The withdraw method does not allow the account to go negative - Will output a warning message and return the original un-modified balance
-
-########## Optional: ################
-#
-# Create an Owner class which will store information about those who own the Accounts.
-# This should have info like name and address and any other identifying information that an account owner would have.
-# Add an owner property to each Account to track information about who owns the account.
-# The Account can be created with an owner, OR you can create a method that will add the owner after the Account has already been created.
-#
-########## 
-# module Bank
-	
-# 	class Account
-
-# 		attr_reader :id, :open_date
-# 		attr_accessor :balance # this should permit reading and writing
-
-# 		# intial_balance in pennies
-
-# 		def initialize(id, balance)
-# 			# ruby dosen't like constants in intialize values, lowercase it
-# 			@id = id
-# 			@balance = balance
-# 			# pretty_initial_balance = (@initial_balance / 100).to_f
-# 			is_negative # method to determine if transaction would lead to overdraft
-# 		end
-# 	end
-#   # use row here...
-
-# 	# print debuggin' # raises error as expected if transaction is negative		
-# 		def is_negative
-# 			unless @balance > 0 
-# 				raise ArgumentError.new("You must enter a positive balance!")
-# 			end
-# 		end
-
-# 		def see_balance
-# 			return @balance
-# 		end
-
-# 		def withdraw(money)
-# 			@balance = @balance - money
-# 			is_negative
-# 			see_balance
-# 		end
-
-# 		def deposit(money)
-# 			@balance = @balance + money 
-# 			is_negative
-# 			see_balance
-# 		end
-# end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#puts checking1.withdraw(1000, 200)	# testing check > 3, with allowed overdraft
+saver1 = Bank::SavingsAccount.new(9999, 2000, 2016)
+puts saver1.add_interest(1) # ima a generous bank
 
