@@ -1,4 +1,6 @@
 #BANK ACCOUNT WAVE 3 
+#######################################
+
 #Create a SavingsAccount class which should inherit behavior from the Account class. It should include the following updated functionality:
 # * Use inheritance to share some behavior across classes
 # * Enhance functionality built in Wave 1
@@ -141,21 +143,23 @@ module Bank
 		# consider making private
 		def reset_checks
 			@check_count = 0
-			return check_count
+			return @check_count
 		end
 
 	end
 end
 
 # BEGIN TESTS
-# checking1 = Bank::CheckingAccount.new(9919, 4000, 2016)
+checking1 = Bank::CheckingAccount.new(9919, 4000, 2016)
 # . checking1.withdraw(1000)
 # . checking1.withdraw_using_check(2000) # testing check < 3, no overdraft
 # . checking1.withdraw_using_check(5100) # testing check < 3, with excess overdraft #works as expected raises argu defined at line 125
 # . checking1.withdraw_using_check(5000)	# testing check < 3, with allowed overdraft, # initial fail throwing error with -5 overdrafts because I set overdraft value to 10 (10 cents) instead of 1000 ($10)
 # . checking1.withdraw_using_check(2000) # testing check > 3, no overdraft
 # . checking1.withdraw_using_check(5100) # testing check > 3, with excess overdraft
-#puts checking1.withdraw(1000, 200)	# testing check > 3, with allowed overdraft
-saver1 = Bank::SavingsAccount.new(9999, 2000, 2016)
-puts saver1.add_interest(1) # ima a generous bank
+# . puts checking1.withdraw(1000, 200)	# testing check > 3, with allowed overdraft
+# . checking1.reset_checks
+# . saver1 = Bank::SavingsAccount.new(9999, 2000, 2016)
+# . puts saver1.add_interest(1) # ima a generous bank
+
 
